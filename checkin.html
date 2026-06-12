@@ -303,34 +303,21 @@ function doCheckin() {
 
   btn.disabled = true;
   btn.textContent = "처리 중...";
-  hideMsg();
 
   var url = SCRIPT_URL + "?action=checkin&token=" + TOKEN +
     "&name=" + encodeURIComponent(name) +
     "&pace=" + encodeURIComponent(selectedPace);
 
-  // mode: "no-cors" 옵션을 완벽히 배제하여 정식 통신 핸드셰이크 처리
   fetch(url, { method: "GET", mode: "no-cors" })
-    .then(function(res) {
-      if (!res.ok) throw new Error("서버 인프라 응답 에러");
-      return res.json();
+    .then(function() {
+      document.getElementById("main-form").style.display = "none";
+      document.getElementById("success-screen").style.display = "block";
+      document.getElementById("success-name").textContent = name + "님, 출석 완료!";
+      document.getElementById("success-pace").textContent = "목표 페이스 " + selectedPace;
+      launchConfetti();
     })
-    .then(function(data) {
-      if (data.status === "success") {
-        document.getElementById("main-form").style.display = "none";
-        document.getElementById("success-screen").style.display = "block";
-        document.getElementById("success-name").textContent = name + "님, 출석 완료!";
-        document.getElementById("success-pace").textContent = "목표 페이스 " + selectedPace;
-        launchConfetti();
-      } else {
-        throw new Error(data.message || "기록 실패");
-      }
-    })
-    .catch(function(err) {
-      console.error(err);
-      // 백엔드가 제공한 중복 출석 가이드 문구가 매핑되어 있다면 해당 문장을 스크린에 그대로 표출
-      var errMsg = err.message.includes("이미 오늘") ? err.message : "네트워크 오류가 발생했습니다. 다시 시도해 주세요.";
-      showMsg(errMsg, "error");
+    .catch(function() {
+      showMsg("네트워크 오류가 발생했습니다.", "error");
       btn.disabled = false;
       btn.textContent = "출석 완료";
     });
