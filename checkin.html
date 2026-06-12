@@ -310,7 +310,7 @@ function doCheckin() {
     "&pace=" + encodeURIComponent(selectedPace);
 
   // mode: "no-cors" 옵션을 완벽히 배제하여 정식 통신 핸드셰이크 처리
-  fetch(url, { method: "GET" })
+  fetch(url, { method: "GET", mode: "no-cors" })
     .then(function(res) {
       if (!res.ok) throw new Error("서버 인프라 응답 에러");
       return res.json();
